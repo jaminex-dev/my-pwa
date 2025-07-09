@@ -24,7 +24,6 @@
             <section id="add-form">
                 <input type="text" id="task-input" name="task-input" placeholder="Nueva tarea...">
                 <button id="add-btn">Agregar</button>
-                <button id="reload-btn" style="background: #FF9800;">🔄 Recargar</button>
             </section>
 
             <section id="tasks-list">
@@ -43,14 +42,13 @@
     <!-- Script para instalación PWA -->
     <script>
         let deferredPrompt;
+        let installButton;
         
-        window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('💾 PWA instalable detectada');
-            e.preventDefault();
-            deferredPrompt = e;
+        // Crear botón de instalación (siempre visible para testing)
+        function createInstallButton() {
+            if (installButton) return; // Ya existe
             
-            // Crear botón de instalación
-            const installButton = document.createElement('button');
+            installButton = document.createElement('button');
             installButton.textContent = '📲 Instalar PWA';
             installButton.style.cssText = `
                 position: fixed;
@@ -64,23 +62,52 @@
                 cursor: pointer;
                 z-index: 1000;
                 font-size: 14px;
+                opacity: 0.7;
             `;
             
             installButton.addEventListener('click', async () => {
                 if (deferredPrompt) {
+                    console.log('💾 Intentando instalar PWA...');
                     deferredPrompt.prompt();
                     const { outcome } = await deferredPrompt.userChoice;
                     console.log(`PWA instalación: ${outcome}`);
-                    deferredPrompt = null;
-                    installButton.remove();
+                    if (outcome === 'accepted') {
+                        deferredPrompt = null;
+                        installButton.remove();
+                        installButton = null;
+                    }
+                } else {
+                    console.log('⚠️ PWA no disponible para instalación en este momento');
+                    console.log('Esto es normal en localhost o si ya está instalada');
                 }
             });
             
             document.body.appendChild(installButton);
+            console.log('📲 Botón de instalación PWA creado');
+        }
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('💾 PWA instalable detectada');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            if (installButton) {
+                installButton.style.opacity = '1';
+                installButton.textContent = '📲 Instalar PWA (Listo)';
+            }
         });
         
         window.addEventListener('appinstalled', () => {
             console.log('✅ PWA instalada exitosamente');
+            if (installButton) {
+                installButton.remove();
+                installButton = null;
+            }
+        });
+        
+        // Crear botón al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            createInstallButton();
         });
     </script>
 </body>

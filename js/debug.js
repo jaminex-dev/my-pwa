@@ -214,8 +214,12 @@ class PWADebugger {
 
     // Test 3: CouchDB
     try {
-      const response = await fetch(COUCHDB_CONFIG.getUrl());
-      console.log(response.ok ? '✅ CouchDB accesible' : '❌ CouchDB no accesible');
+      if (CONFIG.isInLAN()) {
+        const response = await fetch(CONFIG.getCouchDBServerUrl());
+        console.log(response.ok ? '✅ CouchDB accesible' : '❌ CouchDB no accesible');
+      } else {
+        console.log('🌐 CouchDB omitido - no es entorno LAN');
+      }
     } catch (error) {
       console.error('❌ CouchDB error:', error);
     }

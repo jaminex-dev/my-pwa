@@ -14,15 +14,6 @@ class App {
     this.ui.taskInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') this.addTask();
     });
-    
-    // Botón de recarga
-    const reloadBtn = document.getElementById('reload-btn');
-    if (reloadBtn) {
-      reloadBtn.addEventListener('click', () => {
-        console.log('🔄 Recarga manual solicitada');
-        this.loadTasks();
-      });
-    }
 
     // Escuchar sincronización
     window.addEventListener('dbSync', (event) => {
