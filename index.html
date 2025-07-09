@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi PWA Offline</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg">
+    <link rel="shortcut icon" type="image/svg+xml" href="icons/icon-192.svg">
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Mi PWA</h1>
+            <div id="status">
+                <span id="connection-status">🔄 Verificando conexión...</span>
+            </div>
+        </header>
+
+        <main>
+            <section id="add-form">
+                <input type="text" id="task-input" placeholder="Nueva tarea...">
+                <button id="add-btn">Agregar</button>
+            </section>
+
+            <section id="tasks-list">
+                <!-- Las tareas se cargarán aquí -->
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts en orden correcto -->
+    <script src="js/config.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/debug.js"></script>
+</body>
+</html>

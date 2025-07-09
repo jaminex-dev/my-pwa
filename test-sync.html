@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Sincronización - PWA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #1976D2;
+        }
+        .success {
+            background: #4CAF50;
+        }
+        .warning {
+            background: #FF9800;
+        }
+        .error {
+            background: #f44336;
+        }
+        .log {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.online {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        .status.offline {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .status.syncing {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test de Sincronización PWA</h1>
+        <p>Esta página te permite probar la sincronización diferida de la PWA</p>
+        
+        <div class="test-section">
+            <h3>📊 Estado Actual</h3>
+            <div id="connection-status" class="status offline">🔍 Verificando...</div>
+            <div id="sync-info" class="log">Iniciando verificación...</div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🛠️ Acciones de Prueba</h3>
+            <button class="button" onclick="testAddOfflineData()">📝 Agregar Datos Offline</button>
+            <button class="button success" onclick="testForceSync()">🔄 Forzar Sincronización</button>
+            <button class="button warning" onclick="testResetConnection()">🔄 Reset Conexión</button>
+            <button class="button error" onclick="testClearData()">🧹 Limpiar Todo</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>📋 Datos Locales</h3>
+            <div id="local-data" class="log">Cargando datos locales...</div>
+            <button class="button" onclick="loadLocalData()">♻️ Recargar Datos</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>📜 Log de Eventos</h3>
+            <div id="event-log" class="log">Esperando eventos...</div>
+            <button class="button" onclick="clearLog()">🧹 Limpiar Log</button>
+        </div>
+    </div>
+
+    <!-- Cargar bibliotecas -->
+    <script src="https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/database.js"></script>
+    
+    <script>
+        let db;
+        let eventLog = [];
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            eventLog.push(logEntry);
+            
+            const logElement = document.getElementById('event-log');
+            logElement.textContent = eventLog.slice(-10).join('\n');
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            console.log(logEntry);
+        }
+        
+        function updateConnectionStatus(status, isOnline = false) {
+            const statusElement = document.getElementById('connection-status');
+            statusElement.textContent = status;
+            statusElement.className = `status ${isOnline ? 'online' : 'offline'}`;
+        }
+        
+        function updateSyncInfo(info) {
+            const infoElement = document.getElementById('sync-info');
+            infoElement.textContent = info;
+        }
+        
+        async function loadLocalData() {
+            try {
+                if (!db) {
+                    log('❌ Base de datos no inicializada');
+                    return;
+                }
+                
+                const data = await db.getPendingSyncData();
+                const dataElement = document.getElementById('local-data');
+                
+                if (data.length === 0) {
+                    dataElement.textContent = 'No hay datos locales';
+                } else {
+                    dataElement.textContent = `${data.length} documentos locales:\n` + 
+                        data.map(doc => `- ${doc.type}: ${doc.title || doc._id}`).join('\n');
+                }
+                
+                log(`📊 Datos locales: ${data.length} documentos`);
+            } catch (error) {
+                log(`❌ Error cargando datos: ${error.message}`);
+            }
+        }
+        
+        async function testAddOfflineData() {
+            try {
+                if (!db) {
+                    log('❌ Base de datos no inicializada');
+                    return;
+                }
+                
+                const testData = {
+                    type: 'test',
+                    title: `Test Offline ${new Date().toLocaleTimeString()}`,
+                    created: new Date().toISOString(),
+                    content: 'Datos creados en modo offline para probar sincronización'
+                };
+                
+                await db.create(testData);
+                log(`✅ Datos offline creados: ${testData.title}`);
+                await loadLocalData();
+                
+            } catch (error) {
+                log(`❌ Error creando datos offline: ${error.message}`);
+            }
+        }
+        
+        async function testForceSync() {
+            try {
+                if (!db) {
+                    log('❌ Base de datos no inicializada');
+                    return;
+                }
+                
+                log('🔄 Iniciando sincronización forzada...');
+                updateConnectionStatus('🔄 Sincronizando...', true);
+                
+                const result = await db.forceSyncNow();
+                
+                if (result) {
+                    log('✅ Sincronización forzada exitosa');
+                    updateConnectionStatus('✅ Sincronización completada', true);
+                } else {
+                    log('❌ Error en sincronización forzada');
+                    updateConnectionStatus('❌ Error de sincronización', false);
+                }
+                
+                await loadLocalData();
+                
+            } catch (error) {
+                log(`❌ Error en sincronización: ${error.message}`);
+                updateConnectionStatus('❌ Error de sincronización', false);
+            }
+        }
+        
+        async function testResetConnection() {
+            try {
+                if (!db) {
+                    log('❌ Base de datos no inicializada');
+                    return;
+                }
+                
+                log('🔄 Reiniciando conexión...');
+                updateConnectionStatus('🔄 Reiniciando...', true);
+                
+                await db.resetConnection();
+                log('✅ Conexión reiniciada');
+                
+                setTimeout(checkStatus, 3000);
+                
+            } catch (error) {
+                log(`❌ Error reiniciando conexión: ${error.message}`);
+            }
+        }
+        
+        async function testClearData() {
+            if (!confirm('¿Estás seguro de que quieres limpiar todos los datos?')) {
+                return;
+            }
+            
+            try {
+                if (db && db.localDB) {
+                    await db.localDB.destroy();
+                    log('🧹 Base de datos local limpiada');
+                }
+                
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                    log('🧹 Cache limpiada');
+                }
+                
+                log('🧹 Todos los datos limpiados');
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+                
+            } catch (error) {
+                log(`❌ Error limpiando datos: ${error.message}`);
+            }
+        }
+        
+        function clearLog() {
+            eventLog = [];
+            document.getElementById('event-log').textContent = 'Log limpiado';
+        }
+        
+        async function checkStatus() {
+            try {
+                if (!db) {
+                    updateConnectionStatus('❌ Base de datos no inicializada', false);
+                    return;
+                }
+                
+                const status = await db.getConnectionStatus();
+                const isOnline = navigator.onLine;
+                
+                let statusText = '';
+                if (status.canSync) {
+                    statusText = status.syncActive ? '🌐 Online - Sync Activo' : '🌐 Online - Sync Pausado';
+                } else if (status.hasLocalData && !status.canSync) {
+                    statusText = '📱 Offline - Datos Pendientes';
+                } else {
+                    statusText = isOnline ? '🌐 Online - Sin Conexión DB' : '📱 Offline';
+                }
+                
+                updateConnectionStatus(statusText, status.canSync);
+                
+                const syncInfo = `Online: ${isOnline}\nDB Remota: ${status.hasRemoteDB}\nDatos Locales: ${status.hasLocalData}\nSync Activo: ${status.syncActive}`;
+                updateSyncInfo(syncInfo);
+                
+                log(`📊 Estado: ${statusText}`);
+                
+            } catch (error) {
+                log(`❌ Error verificando estado: ${error.message}`);
+                updateConnectionStatus('❌ Error verificando estado', false);
+            }
+        }
+        
+        // Inicializar cuando esté listo
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                log('🚀 Iniciando test de sincronización...');
+                
+                // Esperar a que CONFIG esté disponible
+                if (typeof window.CONFIG === 'undefined') {
+                    log('⏳ Esperando CONFIG...');
+                    setTimeout(async () => {
+                        await initTest();
+                    }, 1000);
+                } else {
+                    await initTest();
+                }
+                
+            } catch (error) {
+                log(`❌ Error inicializando test: ${error.message}`);
+            }
+        });
+        
+        async function initTest() {
+            try {
+                log('🔧 Inicializando base de datos...');
+                db = new DatabaseManager();
+                
+                // Listeners para eventos de sincronización
+                window.addEventListener('dbSync', (event) => {
+                    const info = event.detail;
+                    log(`🔄 Sync ${info.direction}: ${info.change?.docs?.length || 0} docs`);
+                    checkStatus();
+                });
+                
+                window.addEventListener('online', () => {
+                    log('🌐 Conexión detectada');
+                    checkStatus();
+                });
+                
+                window.addEventListener('offline', () => {
+                    log('📱 Conexión perdida');
+                    checkStatus();
+                });
+                
+                // Verificar estado inicial
+                setTimeout(checkStatus, 2000);
+                setTimeout(loadLocalData, 2000);
+                
+                log('✅ Test inicializado correctamente');
+                
+            } catch (error) {
+                log(`❌ Error inicializando test: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>

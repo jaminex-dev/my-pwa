@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Mi PWA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-color: #2196F3;
+        }
+        
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .card-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: #2196F3;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #1976D2;
+        }
+        
+        .btn-success {
+            background: #4CAF50;
+        }
+        
+        .btn-success:hover {
+            background: #45a049;
+        }
+        
+        .btn-warning {
+            background: #FF9800;
+        }
+        
+        .btn-warning:hover {
+            background: #e68900;
+        }
+        
+        .status-bar {
+            background: #e8f5e8;
+            border: 1px solid #c8e6c9;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 500;
+            color: #2e7d32;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .feature {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .feature-text {
+            font-size: 0.9rem;
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Mi PWA</h1>
+            <p>Progressive Web App con Sincronización Offline</p>
+        </div>
+        
+        <div class="content">
+            <div class="status-bar">
+                <span id="pwa-status">✅ PWA Lista para usar</span>
+            </div>
+            
+            <div class="section">
+                <h2>🏠 Aplicaciones</h2>
+                <div class="cards">
+                    <div class="card">
+                        <div class="card-icon">📱</div>
+                        <div class="card-title">Aplicación Principal</div>
+                        <div class="card-description">
+                            La aplicación principal de la PWA con todas las funcionalidades offline
+                        </div>
+                        <a href="index.html" class="btn">Abrir App</a>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon">🧪</div>
+                        <div class="card-title">Pruebas de Sincronización</div>
+                        <div class="card-description">
+                            Interfaz completa para probar la sincronización offline y online
+                        </div>
+                        <a href="test-sync.html" class="btn btn-success">Probar Sync</a>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon">🔍</div>
+                        <div class="card-title">Diagnóstico PWA</div>
+                        <div class="card-description">
+                            Herramientas para diagnosticar problemas de cache y Service Worker
+                        </div>
+                        <a href="diagnostico.html" class="btn btn-warning">Diagnóstico</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>🛠️ Características Principales</h2>
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">💾</div>
+                        <div class="feature-text">Almacenamiento Offline</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔄</div>
+                        <div class="feature-text">Sincronización Diferida</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📱</div>
+                        <div class="feature-text">Progressive Web App</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🌐</div>
+                        <div class="feature-text">Trabajo Offline</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔍</div>
+                        <div class="feature-text">Panel de Debug</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔧</div>
+                        <div class="feature-text">Configuración Automática</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>📚 Documentación</h2>
+                <div class="cards">
+                    <div class="card">
+                        <div class="card-icon">📖</div>
+                        <div class="card-title">Guía de Uso</div>
+                        <div class="card-description">
+                            Documentación completa sobre cómo usar la PWA
+                        </div>
+                        <a href="README.md" class="btn">Ver README</a>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon">🔧</div>
+                        <div class="card-title">Solución de Problemas</div>
+                        <div class="card-description">
+                            Guía para resolver problemas comunes y debugging
+                        </div>
+                        <a href="TROUBLESHOOTING.md" class="btn btn-warning">Troubleshooting</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Verificar estado de la PWA
+        function checkPWAStatus() {
+            const statusElement = document.getElementById('pwa-status');
+            
+            // Verificar Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(registration => {
+                    if (registration) {
+                        statusElement.textContent = '✅ PWA Lista - Service Worker activo';
+                        statusElement.style.background = '#e8f5e8';
+                        statusElement.style.color = '#2e7d32';
+                    } else {
+                        statusElement.textContent = '⚠️ PWA Parcial - Service Worker no registrado';
+                        statusElement.style.background = '#fff3cd';
+                        statusElement.style.color = '#856404';
+                    }
+                });
+            } else {
+                statusElement.textContent = '❌ PWA No Soportada en este navegador';
+                statusElement.style.background = '#f8d7da';
+                statusElement.style.color = '#721c24';
+            }
+        }
+        
+        // Verificar estado al cargar
+        document.addEventListener('DOMContentLoaded', checkPWAStatus);
+        
+        // Agregar funcionalidad de instalación si es compatible
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Mostrar botón de instalación
+            const installBtn = document.createElement('button');
+            installBtn.textContent = '📲 Instalar PWA';
+            installBtn.className = 'btn btn-success';
+            installBtn.style.marginTop = '10px';
+            
+            installBtn.addEventListener('click', () => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('PWA instalada');
+                    }
+                    deferredPrompt = null;
+                });
+            });
+            
+            document.querySelector('.status-bar').appendChild(installBtn);
+        });
+    </script>
+</body>
+</html>

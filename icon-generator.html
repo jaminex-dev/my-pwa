@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generador de Iconos PWA</title>
+</head>
+<body>
+    <canvas id="canvas192" width="192" height="192" style="border: 1px solid #ccc; margin: 10px;"></canvas>
+    <canvas id="canvas512" width="512" height="512" style="border: 1px solid #ccc; margin: 10px;"></canvas>
+    
+    <script>
+        // Función para crear icono
+        function createIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            
+            // Fondo azul
+            ctx.fillStyle = '#2196F3';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Texto "MX" en blanco
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.4}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('MX', size / 2, size / 2);
+            
+            // Descargar imagen
+            const link = document.createElement('a');
+            link.download = `icon-${size}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // Crear iconos automáticamente
+        setTimeout(() => {
+            createIcon(document.getElementById('canvas192'), 192);
+            setTimeout(() => {
+                createIcon(document.getElementById('canvas512'), 512);
+            }, 1000);
+        }, 1000);
+    </script>
+    
+    <p>Los iconos se descargarán automáticamente. Muévelos a la carpeta icons/</p>
+</body>
+</html>
