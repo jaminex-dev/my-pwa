@@ -14,6 +14,15 @@ class App {
     this.ui.taskInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') this.addTask();
     });
+    
+    // Botón de recarga
+    const reloadBtn = document.getElementById('reload-btn');
+    if (reloadBtn) {
+      reloadBtn.addEventListener('click', () => {
+        console.log('🔄 Recarga manual solicitada');
+        this.loadTasks();
+      });
+    }
 
     // Escuchar sincronización
     window.addEventListener('dbSync', (event) => {
@@ -61,13 +70,42 @@ class App {
 
   async loadTasks() {
     try {
+      console.log('🔄 Cargando tareas...');
       const tasks = await this.db.getAll('task');
+      console.log('📋 Tareas encontradas:', tasks.length);
+      
+      if (CONFIG.app.debug) {
+        console.log('📊 Tareas detalle:', tasks);
+      }
+      
       // Ordenar por fecha de creación (más recientes primero)
       tasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       this.ui.renderTasks(tasks);
+      
+      // Mostrar info de debug en la interfaz si está habilitado
+      if (CONFIG.app.debug) {
+        this.showDebugInfo(tasks);
+      }
     } catch (error) {
       console.error('Error cargando tareas:', error);
       this.ui.showMessage('Error al cargar tareas', 'error');
+    }
+  }
+
+  showDebugInfo(tasks) {
+    const debugDiv = document.getElementById('debug-info') || document.createElement('div');
+    debugDiv.id = 'debug-info';
+    debugDiv.className = 'debug-info';
+    debugDiv.innerHTML = `
+      <strong>Debug Info:</strong><br>
+      Tareas en DB local: ${tasks.length}<br>
+      Conexión CouchDB: ${this.db.couchAvailable ? 'Activa' : 'Inactiva'}<br>
+      Red LAN: ${this.db.isInLAN ? 'Sí' : 'No'}<br>
+      Estado: ${this.db.getStatus().isOnline ? 'Online' : 'Offline'}
+    `;
+    
+    if (!document.getElementById('debug-info')) {
+      document.querySelector('#tasks-list').parentNode.insertBefore(debugDiv, document.querySelector('#tasks-list'));
     }
   }
 

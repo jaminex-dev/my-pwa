@@ -100,6 +100,56 @@ main {
 }
 
 .delete-btn:hover {
+  background: #f5f5f5;
+  border-radius: 3px;
+}
+
+.no-tasks {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 40px 20px;
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: white;
+  z-index: 1000;
+  font-weight: 500;
+}
+
+.notification.success {
+  background: #4CAF50;
+}
+
+.notification.error {
+  background: #f44336;
+}
+
+.notification.info {
+  background: #2196F3;
+}
+
+#tasks-list {
+  min-height: 200px;
+}
+
+/* Debug styles */
+.debug-info {
+  background: #f0f0f0;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.delete-btn:hover {
   background: #ffebee;
   border-radius: 4px;
 }

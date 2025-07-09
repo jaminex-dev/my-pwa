@@ -6,17 +6,22 @@ class UIManager {
   }
 
   renderTasks(tasks) {
+    console.log('🎨 Renderizando tareas:', tasks.length);
     this.tasksList.innerHTML = '';
     
     if (tasks.length === 0) {
       this.tasksList.innerHTML = '<p class="no-tasks">No hay tareas</p>';
+      console.log('📝 No hay tareas para mostrar');
       return;
     }
 
-    tasks.forEach(task => {
+    tasks.forEach((task, index) => {
+      console.log(`📝 Renderizando tarea ${index + 1}:`, task.title);
       const taskElement = this.createTaskElement(task);
       this.tasksList.appendChild(taskElement);
     });
+    
+    console.log('✅ Renderizado completo');
   }
 
   createTaskElement(task) {

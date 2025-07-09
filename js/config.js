@@ -1,13 +1,13 @@
 // Configuración global de la PWA
 window.CONFIG = {
   couchdb: {
-    host: '10.1.1.134',
+    host: '10.1.1.134', // IP correcta de tu CouchDB
     port: '5984',
     protocol: 'http',
     database: 'myapp',
     credentials: {
       username: 'admin',
-      password: '1234'
+      password: '1234' // Cambia por la contraseña real de CouchDB
     }
   },
   
@@ -23,8 +23,9 @@ window.CONFIG = {
     const isLAN = hostname === 'localhost' || 
                   hostname === '127.0.0.1' ||
                   hostname.startsWith('192.168.') ||
-                  hostname.startsWith('10.1.1.') ||
+                  hostname.startsWith('10.1.1.') ||    // Tu red específica
                   hostname.startsWith('172.16.') ||
+                  hostname === '10.1.1.134' ||          // IP específica del servidor
                   (hostname.endsWith('.local') && !hostname.includes('vercel'));
     
     console.log(`🌐 Verificando red - Hostname: ${hostname}, Es LAN: ${isLAN}`);
@@ -80,8 +81,23 @@ window.CONFIG = {
       protocol: window.location.protocol,
       port: window.location.port,
       userAgent: navigator.userAgent,
-      online: navigator.onLine
+      online: navigator.onLine,
+      couchdbUrl: this.getCouchDBUrl(),
+      networkIP: this.getNetworkInfo()
     };
+  },
+
+  // Obtener información de red
+  getNetworkInfo() {
+    const hostname = window.location.hostname;
+    if (hostname.startsWith('10.1.1.')) {
+      return {
+        network: '10.1.1.x',
+        gateway: '10.1.1.1',
+        couchdbHost: '10.1.1.134'
+      };
+    }
+    return { network: 'unknown', hostname };
   },
 
   getCouchDBServerUrl() {

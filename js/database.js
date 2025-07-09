@@ -224,13 +224,21 @@ class DatabaseManager {
 
   async getAll(type = null) {
     try {
+      console.log(`📖 Obteniendo documentos${type ? ` de tipo: ${type}` : ''}`);
       const result = await this.localDB.allDocs({ include_docs: true });
       let docs = result.rows.map(row => row.doc);
       
+      console.log(`📊 Total documentos en DB: ${docs.length}`);
+      
       if (type) {
         docs = docs.filter(doc => doc.type === type);
+        console.log(`📊 Documentos filtrados por tipo '${type}': ${docs.length}`);
       }
       
+      // Filtrar documentos que no sean de diseño
+      docs = docs.filter(doc => !doc._id.startsWith('_design/'));
+      
+      console.log(`📊 Documentos finales: ${docs.length}`);
       return docs;
     } catch (error) {
       console.error('Error leyendo:', error);
