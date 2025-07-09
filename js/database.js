@@ -46,6 +46,12 @@ class DatabaseManager {
   }
 
   startNetworkDetection() {
+    // Solo verificar CouchDB si estamos en LAN
+    if (!this.isInLAN) {
+      console.log('🌐 Modo Internet: Detección de red CouchDB deshabilitada');
+      return;
+    }
+    
     // Verificar cada 30 segundos si podemos conectar a CouchDB
     this.syncCheckInterval = setInterval(async () => {
       if (!this.couchAvailable && this.isOnline) {
@@ -60,6 +66,12 @@ class DatabaseManager {
   }
 
   async checkCouchDBConnection() {
+    // No intentar conectar si no estamos en LAN
+    if (!this.isInLAN) {
+      console.log('🌐 Modo Internet: CouchDB deshabilitado');
+      return;
+    }
+    
     try {
       // Verificar disponibilidad de CouchDB
       const available = await CONFIG.isCouchDBAvailable();

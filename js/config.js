@@ -48,6 +48,7 @@ window.CONFIG = {
   // Verificar si CouchDB está disponible
   async isCouchDBAvailable() {
     if (!this.isInLAN()) {
+      console.log('🌐 Modo Internet: CouchDB deshabilitado');
       return false;
     }
     
@@ -63,6 +64,7 @@ window.CONFIG = {
       clearTimeout(timeoutId);
       return response.ok;
     } catch (error) {
+      console.log('❌ CouchDB no disponible:', error.message);
       return false;
     }
   },
@@ -95,7 +97,10 @@ window.CONFIG = {
 
 // Auto-configurar CouchDB CORS solo si es necesario
 async function setupCouchDBCORS() {
-  if (!CONFIG.app.debug) return; // Solo en desarrollo
+  if (!CONFIG.app.debug || !CONFIG.isInLAN()) {
+    console.log('🌐 CORS setup omitido - no es entorno LAN');
+    return; // Solo en desarrollo y LAN
+  }
 
   try {
     const baseUrl = CONFIG.getCouchDBServerUrl();
