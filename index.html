@@ -38,5 +38,49 @@
     <script src="js/ui.js"></script>
     <script src="js/app.js"></script>
     <script src="js/debug.js"></script>
+    
+    <!-- Script para instalación PWA -->
+    <script>
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('💾 PWA instalable detectada');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Crear botón de instalación
+            const installButton = document.createElement('button');
+            installButton.textContent = '📲 Instalar PWA';
+            installButton.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4CAF50;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+                z-index: 1000;
+                font-size: 14px;
+            `;
+            
+            installButton.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`PWA instalación: ${outcome}`);
+                    deferredPrompt = null;
+                    installButton.remove();
+                }
+            });
+            
+            document.body.appendChild(installButton);
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ PWA instalada exitosamente');
+        });
+    </script>
 </body>
 </html>

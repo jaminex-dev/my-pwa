@@ -54,11 +54,10 @@ class DatabaseManager {
     
     // Verificar cada 30 segundos si podemos conectar a CouchDB
     this.syncCheckInterval = setInterval(async () => {
-      if (!this.couchAvailable && this.isOnline) {
+      if (!this.couchAvailable && this.isOnline && this.isInLAN) {
         const canConnect = await CONFIG.isCouchDBAvailable();
-        if (canConnect && !this.isInLAN) {
+        if (canConnect) {
           console.log('🏠 Red LAN detectada - Conectando a CouchDB');
-          this.isInLAN = true;
           await this.checkCouchDBConnection();
         }
       }

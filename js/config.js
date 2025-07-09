@@ -20,12 +20,15 @@ window.CONFIG = {
   // Detectar si estamos en red LAN
   isInLAN() {
     const hostname = window.location.hostname;
-    return hostname === 'localhost' || 
-           hostname === '127.0.0.1' ||
-           hostname.startsWith('192.168.') ||
-           hostname.startsWith('10.1.1.') ||
-           hostname.startsWith('172.16.') ||
-           (hostname.endsWith('.local') && !hostname.includes('vercel'));
+    const isLAN = hostname === 'localhost' || 
+                  hostname === '127.0.0.1' ||
+                  hostname.startsWith('192.168.') ||
+                  hostname.startsWith('10.1.1.') ||
+                  hostname.startsWith('172.16.') ||
+                  (hostname.endsWith('.local') && !hostname.includes('vercel'));
+    
+    console.log(`🌐 Verificando red - Hostname: ${hostname}, Es LAN: ${isLAN}`);
+    return isLAN;
   },
 
   // Detectar modo debug
