@@ -1,0 +1,34 @@
+# Configuración para PWA en XAMPP
+
+# Habilitar CORS para desarrollo
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
+
+# Configurar tipos MIME para PWA
+AddType application/manifest+json .json
+AddType application/json .json
+AddType text/cache-manifest .appcache
+
+# Cache headers para Service Worker
+<Files "sw.js">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</Files>
+
+# Cache headers para manifest
+<Files "manifest.json">
+    Header set Cache-Control "public, max-age=3600"
+</Files>
+
+# Permitir Service Worker desde cualquier ruta
+<Files "sw.js">
+    Header set Service-Worker-Allowed "/"
+</Files>
+
+# Rewrite rules para SPA (opcional)
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.html [QSA,L]

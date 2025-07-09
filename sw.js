@@ -1,21 +1,22 @@
-const CACHE_NAME = 'pwa-offline-v2.3';
+const CACHE_NAME = 'pwa-offline-v2.5';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/panel.html',
-  '/test-sync.html',
-  '/diagnostico.html',
-  '/css/style.css',
-  '/js/config.js',
-  '/js/database.js',
-  '/js/ui.js',
-  '/js/app.js',
-  '/js/debug.js',
-  '/manifest.json',
-  '/icons/icon-192.svg',
-  '/icons/icon-512.svg',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  './',
+  './index.html',
+  './panel.html',
+  './test-sync.html',
+  './test-conectividad.html',
+  './diagnostico.html',
+  './css/style.css',
+  './js/config.js',
+  './js/database.js',
+  './js/ui.js',
+  './js/app.js',
+  './js/debug.js',
+  './manifest.json',
+  './icons/icon-192.svg',
+  './icons/icon-512.svg',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
   'https://cdn.jsdelivr.net/npm/pouchdb@8.0.1/dist/pouchdb.min.js'
 ];
 
@@ -91,7 +92,7 @@ self.addEventListener('fetch', (event) => {
             // Si falla el fetch y es una página, devolver index.html
             if (event.request.destination === 'document') {
               console.log('📱 Sirviendo index.html para navegación offline');
-              return caches.match('/index.html');
+              return caches.match('./index.html');
             }
             
             // Para otros recursos, devolver respuesta vacía

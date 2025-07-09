@@ -20,15 +20,18 @@ window.CONFIG = {
   // Detectar si estamos en red LAN
   isInLAN() {
     const hostname = window.location.hostname;
+    const port = window.location.port;
     const isLAN = hostname === 'localhost' || 
                   hostname === '127.0.0.1' ||
                   hostname.startsWith('192.168.') ||
                   hostname.startsWith('10.1.1.') ||    // Tu red específica
                   hostname.startsWith('172.16.') ||
                   hostname === '10.1.1.134' ||          // IP específica del servidor
-                  (hostname.endsWith('.local') && !hostname.includes('vercel'));
+                  (hostname.endsWith('.local') && !hostname.includes('vercel')) ||
+                  (hostname === 'localhost' && (port === '80' || port === '8080' || port === '3000')) || // XAMPP/otros servidores
+                  window.location.protocol === 'http:'; // HTTP generalmente es desarrollo local
     
-    console.log(`🌐 Verificando red - Hostname: ${hostname}, Es LAN: ${isLAN}`);
+    console.log(`🌐 Verificando red - Hostname: ${hostname}:${port}, Protocol: ${window.location.protocol}, Es LAN: ${isLAN}`);
     return isLAN;
   },
 

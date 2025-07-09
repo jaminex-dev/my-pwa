@@ -2,6 +2,31 @@
 
 Una Progressive Web App que funciona offline usando PouchDB/CouchDB para sincronización de datos.
 
+## 🚀 Formas de ejecutar la PWA
+
+### 🔧 **Opción 1: XAMPP (Recomendado para desarrollo)**
+```bash
+# 1. Instalar XAMPP desde https://www.apachefriends.org/
+# 2. Ejecutar el script de instalación
+install-xampp.bat
+
+# 3. Acceder desde:
+# - Local: http://localhost/my-pwa/
+# - Móviles: http://10.1.1.134/my-pwa/
+```
+
+### 📱 **Opción 2: Servidor Node.js**
+```bash
+npm run serve-lan    # Para acceso desde móviles
+# http://10.1.1.134:3000/
+```
+
+### 🌐 **Opción 3: Vercel (Solo modo local)**
+```
+https://my-pwa-ashy.vercel.app/
+# Sin sincronización CouchDB
+```
+
 ## 🚀 Características Principales
 
 - **💾 Almacenamiento Offline**: Datos guardados localmente con PouchDB

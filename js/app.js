@@ -131,30 +131,37 @@ class App {
   async registerServiceWorker() {
     if ('serviceWorker' in navigator) {
       try {
-        // Desregistrar SW anterior si existe
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        for (const registration of registrations) {
-          await registration.unregister();
-          console.log('🗑️ SW anterior desregistrado');
-        }
-
+        console.log('🔧 Registrando Service Worker...');
+        
         // Registrar nuevo SW
-        const registration = await navigator.serviceWorker.register('/sw.js');
+        const registration = await navigator.serviceWorker.register('./sw.js', {
+          scope: './'
+        });
         console.log('✅ Service Worker registrado:', registration.scope);
 
         // Esperar a que se active
-        await new Promise((resolve) => {
-          if (registration.active) {
-            resolve();
-          } else {
-            registration.addEventListener('activate', resolve);
-          }
-        });
+        if (registration.installing) {
+          console.log('⏳ Service Worker instalando...');
+          await new Promise((resolve) => {
+            registration.installing.addEventListener('statechange', (e) => {
+              if (e.target.state === 'activated') {
+                resolve();
+              }
+            });
+          });
+        } else if (registration.waiting) {
+          console.log('⏳ Service Worker esperando...');
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        } else if (registration.active) {
+          console.log('🚀 Service Worker ya está activo');
+        }
 
         // Verificar que está funcionando
-        if (registration.active) {
-          console.log('🚀 Service Worker activo y funcionando');
-        }
+        setTimeout(() => {
+          if (registration.active) {
+            console.log('✅ Service Worker activo y funcionando');
+          }
+        }, 1000);
 
       } catch (error) {
         console.error('❌ Error registrando Service Worker:', error);

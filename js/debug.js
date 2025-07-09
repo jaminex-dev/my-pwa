@@ -166,25 +166,58 @@ class PWADebugger {
     });
     window.addEventListener('offline', () => {
       this.updateStatus('network-status', 'Offline', false);
-      this.updateStatus('couchdb-status', 'Sin conexión', false);
+      this.updateStatus('couch-status', 'Sin conexión', false);
     });
   }
 
   async checkCouchDB() {
+    const couchStatus = document.getElementById('couch-status');
+    if (!couchStatus) return;
+    
     try {
-      if (window.CONFIG) {
+      // Solo verificar si estamos en LAN
+      if (!CONFIG.isInLAN()) {
+        this.updateStatus('couch-status', 'CouchDB omitido - no es LAN', true);
+        return;
+      }
+      
+      // Verificar si ya tenemos info del database manager
+      if (window.app && window.app.db) {
+        const dbStatus = window.app.db.getStatus();
+        if (dbStatus.couchAvailable) {
+          this.updateStatus('couch-status', 'CouchDB conectado', true);
+          return;
+        } else if (dbStatus.isInLAN) {
+          this.updateStatus('couch-status', 'CouchDB no disponible', false);
+          return;
+        }
+      }
+      
+      // Si no tenemos info del DB manager, hacer verificación manual con timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      try {
         const response = await fetch(`${CONFIG.couchdb.protocol}://${CONFIG.couchdb.host}:${CONFIG.couchdb.port}/`, {
           method: 'GET',
           headers: {
             'Authorization': 'Basic ' + btoa(`${CONFIG.couchdb.credentials.username}:${CONFIG.couchdb.credentials.password}`)
-          }
+          },
+          signal: controller.signal
         });
-        this.updateStatus('couchdb-status', response.ok ? 'Conectado' : 'Error de auth', response.ok);
-      } else {
-        this.updateStatus('couchdb-status', 'CONFIG no cargada', false);
+        
+        clearTimeout(timeoutId);
+        this.updateStatus('couch-status', response.ok ? 'CouchDB conectado' : 'Error de auth', response.ok);
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        if (fetchError.name === 'AbortError') {
+          this.updateStatus('couch-status', 'CouchDB timeout', false);
+        } else {
+          throw fetchError;
+        }
       }
     } catch (error) {
-      this.updateStatus('couchdb-status', 'Sin conexión', false);
+      this.updateStatus('couch-status', 'CouchDB no disponible', false);
     }
   }
 
@@ -277,7 +310,7 @@ class PWADebugger {
     console.log('🔄 Reiniciando conexión...');
     
     if (window.app && window.app.db) {
-      this.updateStatus('couchdb-status', 'Reiniciando...', true);
+      this.updateStatus('couch-status', 'Reiniciando...', true);
       this.updateStatus('sync-status', 'Reiniciando...', true);
       
       try {
@@ -289,7 +322,7 @@ class PWADebugger {
         
       } catch (error) {
         console.error('❌ Error reiniciando conexión:', error);
-        this.updateStatus('couchdb-status', 'Error reiniciando', false);
+        this.updateStatus('couch-status', 'Error reiniciando', false);
       }
     } else {
       console.log('⚠️ App no inicializada');
